@@ -6,7 +6,6 @@ redirect_from:
   - /photon/
   - /photon_mapping/
   - /photon_mapping.html
-full_width: true
 ---
 
 ## Gallery
