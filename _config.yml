@@ -21,7 +21,7 @@ repository               : "AndrewYiBC/AndrewYiBC.github.io"
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar           : "profile.png"
+  avatar           : "Avatar_Haleakala_1080.jpg" # "profile.png"
   name             : "Yutong (Andrew) Yi"
   pronouns         : "he/him"
   bio1             : "Yale M.S. in Computer Science '24"
