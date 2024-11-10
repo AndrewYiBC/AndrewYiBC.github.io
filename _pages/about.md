@@ -1,16 +1,10 @@
 ---
 permalink: /
-title: "Projects"
+title: "About Me"
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-# [Volumetric Photon Mapping](/photon_mapping/)
-![Volumetric Photon Mapping](/images/photon_mapping/Water_VolumetricPhotonMapping_2048.png){:width="512" :height="512"}
-
-# [Procedural Planet Generation](/planet_generation/)
-![Procedural Planet Generation](/images/planet_generation/RockyPlanets_1080.png){:width="512" :height="512"}
-
-# [Game Development](https://andrewyibc.itch.io/)
+[![Volumetric Photon Mapping](/images/photon_mapping/Water_VolumetricPhotonMapping_2048.png){:width="512" :height="512"}](/photon_mapping/)
