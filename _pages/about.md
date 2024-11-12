@@ -17,12 +17,12 @@ redirect_from:
     Outside of my academic work, I enjoy immersing myself in the wonders of nature and the universe through hiking, stargazing, and photography.
   </div>
 
-  <div style="flex: 45 1 45%;">
+  <div style="flex: 45 1 45%; text-align: center;">
     <div style="line-height: 50%"><br></div>
     <a href="/photon_mapping/">
       <img src="/images/photon_mapping/Water_VolumetricPhotonMapping_2048.png" alt="Volumetric Photon Mapping" width="512" height="512">
     </a>
-    <div style="font-size: 12px; text-align: center;">
+    <div style="font-size: 12px;">
       My Volumetric Photon Mapping Project
     </div>
   </div>

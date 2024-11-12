@@ -7,7 +7,10 @@
 main:
   - title: "Recent Graphics Projects"
     url: /projects/
-  
+
+  - title: "Hiking & Photography"
+    url: /hiking_photography/
+
   - title: "Game Development"
     url: https://andrewyibc.itch.io/
 
