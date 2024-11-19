@@ -23,7 +23,7 @@ redirect_from:
       <img src="/images/photon_mapping/Water_VolumetricPhotonMapping_2048.png" alt="Volumetric Photon Mapping" width="512" height="512">
     </a>
     <div style="font-size: 12px;">
-      My Volumetric Photon Mapping Project
+      <a href="/photon_mapping/">My Volumetric Photon Mapping Project</a>
     </div>
   </div>
 </div>
