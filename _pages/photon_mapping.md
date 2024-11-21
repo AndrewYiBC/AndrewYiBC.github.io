@@ -87,6 +87,56 @@ This is Equation (7.9) of [[1]](#1) and Equation (5) of [[2]](#2)\
 |:--:|
 | Cardioid Caustic of a Reflective Ring, Rendered using the Cone Filter |
 
+## Participating Media
+Before delving into volumetric photon mapping, I will provide a brief overview of the concept of **participating media** in computer graphics. This summary is based on what I learned from Chapter 11 of *Physically Based Rendering: From Theory to Implementation* (PBRT) (4th Edition) [[4]](#4).\
+Paticipating media refer to regions filled with small particles that interact with light as it travels through the medium. Fog and cloudy water are common real-world examples of paticipating media. Due to the massive number of particles present in such media, it is infeasible to model each particle individually. Instead, when rendering a scene with participating media, the media's effects on light are modeled probablistically.
+
+### Physical Processes in Participating Media
+These are three major physical processes that influence light transport in participating media. I will quote their definitions from PBRT [[4]](#4):
+* **Absorption**: the reduction in radiance due to the conversion of light to another form of energy, such as heat.
+* **Emission**: radiance that is added to the environment from luminous particles.
+* **Scattering**: radiance heading in one direction that is scattered to other directions due to collisions with particles.
+
+In my implementation of participating media, I made the simplification assumptions that all media are non-emissive and **homogeneous** -- meaning the properties of a medium are constant throughout its region.
+
+### Coefficients and Transmittance
+* **Absorption, Scattering, and Extinction Coefficients**\
+The **absorption coefficient** $$(\sigma_a)$$ of a medium represents the probability per unit distance that a light ray traveling through the medium will be absorbed upon hitting a particle.\
+Similarly, the **scattering coefficient** $$(\sigma_s)$$ represents the probability per unit distance that a light ray traveling through the medium will hit a particle and scatter towards a different direction (out-scattering).\
+Both of these interactions reduce the ray's radiance. Thus, the sum of $$\sigma_a$$ and $$\sigma_s$$ is known as the **extinction / attenuation coefficient**, denoted as $$\sigma_t$$.\
+Another important quantity is the ratio of the scattering coefficient to the extinction coefficent $$(\frac{\sigma_s}{\sigma_t})$$. This value is called the **single-scattering albedo**, and it will play a key role in the Russian roulette process for volumetric photon mapping, which will be introduced in the next section.
+
+* **Transmittance and Beer's Law**\
+For any single light ray, the events of scattering or absorbtion intuitively either occur or not. However, in participating media, these interactions are modeled as continuous reduction in radiance, which statistically achieves the same overall effect.\
+The fraction of radiance that remains as a light ray travels from point $$p$$ to $$p'$$ is represented by the **transmittance** $$T_r(p \rightarrow p')$$.\
+Under the homogeneous medium assumption, the transmittance from $$p$$ to $$p'$$ can be easily computed following **Beer's Law**:\
+------------------------------------------------------------------------------------------------------------
+\$$
+T_r(p \rightarrow p') = e^{-\sigma_t d}
+\$$
+This is Equation (11.7) of [[4]](#4), where\
+$$d$$ is the distance between $$p$$ and $$p'$$\
+$$\tau(p \rightarrow p') = \sigma_t d$$ is also known as the **optical depth**\
+------------------------------------------------------------------------------------------------------------
+
+### Phase Function
+The **phase function** for participating media is analogous to the BSDF for surfaces -- it describes the distribution of outgoing directions $$(\omega_o)$$ given the incident direction $$(\omega_i)$$ in a scattering event. In my implementation, I assume that all participating media are **isotropic**, meaning the distribution of scattering directions is rotationally symmetric. In this case, the phase function depends only on the angle $$\theta$$ between $$\omega_i$$ and $$\omega_o$$.\
+I will discuss the specific phase function I used -- the Henyey-Greenstein Phase Function -- in more detail in the next section.
+
+### Implementing the Medium Framework
+Prior to implementing participating media and volumetric photon mapping, I first needed to create a `Medium` class and a framework that allows rays and photons to track their current medium.\
+The `Medium` class I developed includes a `ScatteringCoefs` struct to store $$\sigma_s$$, $$\sigma_a$$, $$\sigma_t$$, and the single-scattering albedo $$\frac{\sigma_s}{\sigma_t}$$. The class also includes a `PhaseFunction` class, the medium's refractive index, and several boolean variables to track properties such as whether the medium requires ray marching. Certain media like air or glass do not "participate" in the light transport process beyond their surfaces and thus do not require ray marching. I will describe the ray marching process in the next section.\
+To enable rays/photons to track the medium they are currently in, I implemented a medium stack for each ray/photon, initialized with its initial medium. When a ray/photon enters a new medium, the new medium is pushed onto the stack; when it exits the current medium, it is popped off the stack.\
+Each primitive in the scene, whether a closed geometry (e.g., a sphere) or an open one (e.g., a triangle), is assigned a `Medium` corresponding to the medium it "surrounds," which is the medium on the side opposite to its normal. When a ray/photon intersects a primitive, if it hits the side aligned with the normal, it is entering a new medium; otherwise, it is exiting the current medium.\
+An issue I encountered was the "leaking" of rays/photons at medium boundaries. Due to floating-point precision errors, rays/photons could, in extreme cases, cross a medium boundary unexpectedly -- possibly between the edges of two triangles that are supposed to be perfectly-sealed. This issue is less likely to occur when the medium is enclosed by a single, closed surface (such as a sphere). However, in the box-with-water scene, the water surface is composed of approximately six million triangles.\
+To address this problem, I implemented additional checks during medium stack operations. For example, when a ray/photon intersects a primitive and exits a medium, it verifies whether the primitive's medium matches its current medium. If a mismatch occurs, the tracing process for that photon/ray is terminated. Due to the rarity of leaking events, discarding a single photon/ray has no noticeable impact on the overall render.
+
+| ![Water - Medium Framework](/images/photon_mapping/Water_PhotonMapping_2048.png){:width="360" :height="360"} |
+|:--:|
+| The Box with Water Scene after Implementing the Medium Framework (Before Volumetric Photon Mapping) |
+|:--:|
+| The scene features a glass dome submerged underwater,<br>with a reflective sphere positioned half inside and half outside the glass dome. |
+
 ## References
 <div style="font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
   <div>
@@ -97,5 +147,9 @@ This is Equation (7.9) of [[1]](#1) and Equation (5) of [[2]](#2)\
   </div>
   <div>
     <a id="3">[3]</a> Henrik Wann Jensen and Per H. Christensen. 1998. Efficient simulation of light transport in scenes with participating media using photon maps. In Proceedings of the 25th annual conference on Computer graphics and interactive techniques (SIGGRAPH '98). Association for Computing Machinery, New York, NY, USA, 311–320. https://doi.org/10.1145/280814.280925
+  </div>
+  <div>
+    <a id="4">[4]</a>
+    Matt Pharr, Wenzel Jakob, and Greg Humphreys. 2023. Physically Based Rendering: From Theory to Implementation (4th ed.). MIT Press, Cambridge, MA, USA.
   </div>
 </div>
