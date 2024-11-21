@@ -47,12 +47,45 @@ The Russian roulette algorithm determines the photon's action using a probabilit
 After the photon action is determined, the photon's properties, such as position and direction, are updated following ray tracing practices.
 
 * **Photon Storing**\
-At each interaction of a photon with a non-specular surface, the information of the incoming photon is stored in the **photon map** -- a three-dimensional data structure -- at the position of interaction. The photon map is maintained separately from the scene geometry, ensuring the decoupling of illumination and geometry. The key operation for the photon map is locating the nearest neighboring photons at any given position, which is essential for the subsequent rendering pass of the photon mapping algorithm. This makes the kd-tree -- a multi-dimensional generalization of the binary search tree -- an ideal data structure for the photon map.\
-A common optimization in photon mapping is to omit storing photons at their first non-specular interaction, as direct illumination can typically be computed by the ray tracing component of the algorithm. With this approach, the photon map is used exclusively for indirect illumination.
+At each interaction of a photon with a non-specular surface, the information of the incoming photon is stored in the **photon map** -- a three-dimensional data structure -- at the position of interaction. This photon map is maintained independently from the scene geometry, ensuring the decoupling of illumination and geometry. The key operation for the photon map is locating the nearest neighboring photons at any given position, which is essential for the subsequent rendering pass of the photon mapping algorithm. This makes the kd-tree -- a multi-dimensional generalization of the binary search tree -- an ideal data structure for the photon map. During the photon tracing pass, photons are initially stored in a flattened array, which will be transformed into a kd-tree at the end of the process.\
+A common optimization in photon mapping is to omit storing photons at their first non-specular interaction, as direct illumination can typically be computed by the ray tracing component of the algorithm. With this approach, the photon map is used exclusively for indirect illumination, which is the strategy I adopted in my implementation.
 
 | ![Visualization - Photon Tracing](/images/photon_mapping/Vis_PhotonTracing_1024.png){:width="256" :height="256"} | ![Visualization - Photon Storing](/images/photon_mapping/Vis_PhotonStoring_1024.png){:width="256" :height="256"} |
 |:--:|:--:|
 | Photon Tracing Visualization | Photon Storing Visualization |
+
+### 2nd Pass: Rendering
+
+* **Radiance Estimate**\
+During the rendering pass, the photon map is used to compute the reflected radiance at any given point in the scene. Without participating media, these points are always on the surfaces of the scene geometry.\
+To estimate the reflected radiance at a specific position $$x$$, the nearest $$n$$ photons are retrieved by querying the photon map. The reflected radiance is then approximated using the following equation:\
+------------------------------------------------------------------------------------------------------------
+\$$
+L_r(x,\vec{\omega}) \approx \sum_{p=1}^n f_r(x,\vec{\omega}_p, \vec{\omega}) \frac{\Delta\Phi_p(x,\vec{\omega}_p)}{\Delta A}
+\$$
+This is Equation (7.4) of [[1]](#1), where\
+$$L_r$$ is the reflected radiance\
+$$f_r$$ is the BRDF at $$x$$\
+$$p$$ is a photon with power $$\Delta\Phi_p(x,\vec{\omega}_p)$$\
+$$\Delta A$$ is the area ($$\Delta A = \pi r^2$$ assuming the photons are on the same surface)\
+------------------------------------------------------------------------------------------------------------\
+I will omit the detailed deriviation starting from the rendering equation in this overview. If you are interested, please refer to the source for more information.\
+The canonical way to perform radiance estimation is to locate the nearest $$n$$ photons around $$x$$ and determine the radius $$r$$ based on the distance to the furthest photon (nearest neighbors search). However, I observed that with a sufficiently high photon count, radiance estimation produces better results when the search radius $$r$$ is fixed to a small value, allowing $$n$$ to vary with photon density (radius search). I found this approach particularly effective for rendering caustics, as it results in sharper edges.\
+Another technique for rendering caustics involves splitting the photon map into a **global photon map** and a **caustics photon map**, with the latter dedicated to storing photons that have undergone specular reflections or transmissions. When I tested this approach, I used the nearest neighbors search for the global photon map and the radius search for the caustics photon map. However, this method did not result in a significant improvement in caustics quality while increasing both computational and memory costs. Therefore, the demo scenes use only a global photon map and the radius search.
+
+* **The Cone Filter**\
+The cone filter is a simple yet efficient technique for sharpening the rendered caustics. It assigns a weight of $$w_{pc}=(1-\frac{d_p}{kr})$$ to each photon $$p$$, where $$d_p$$ is the distance between $$x$$ and $$p$$, and $$k$$ is a filter constant that satisfies $$k \geq 1$$ and is often taken to be $$1$$.\
+Since the photons are assumed to be on two-dimensional surfaces, the cone filter can be normalized with $$(1-\frac{2}{3k})$$. After applying the cone filter, the radiance estimate equation becomes:\
+------------------------------------------------------------------------------------------------------------
+\$$
+L_r(x,\vec{\omega}) \approx \frac{\sum_{p=1}^n f_r(x,\vec{\omega}_p, \vec{\omega}) \Delta\Phi_p(x,\vec{\omega}_p) w\_{pc}}{(1-\frac{2}{3k})\pi r^2}
+\$$
+This is Equation (7.9) of [[1]](#1) and Equation (5) of [[2]](#2)\
+------------------------------------------------------------------------------------------------------------
+
+| ![Ring - Caustics](/images/photon_mapping/Ring_Caustic_2048.png){:width="360" :height="360"} |
+|:--:|
+| Cardioid Caustic of a Reflective Ring, Rendered using the Cone Filter |
 
 ## References
 <div style="font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
