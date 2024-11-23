@@ -25,7 +25,7 @@ I implemented the algorithms based on a series of publications by Dr. Henrik Wan
 | Volume Caustic through a Fog Medium | Cardioid Caustic of a Reflective Ring |
 
 ## Photon Mapping
-The photon mapping algorithm was introduced by Dr. Henrik Wann Jensen in 1996 [[2]](#2). This overview synthesizes the key concepts I have learned from his seminal paper and comprehensive book on the subject [[1]](#1). Additionally, I will share some details about my implementation of the algorithms and the "box with water" demo scene, and discuss the challenges I encountered during the process.\
+The photon mapping algorithm was introduced by Dr. Henrik Wann Jensen in his 1996 paper, "Global Illumination using Photon Maps" [[2]](#2). This overview synthesizes the key concepts I have learned from his seminal paper and his comprehensive book, *Realistic Image Synthesis Using Photon Mapping* [[1]](#1). Additionally, I will share some details about my implementation of the algorithms and the "box with water" demo scene, and discuss the challenges I encountered during the process.\
 As a global illumination algorithm, photon mapping is capable of rendering indirect illumination and caustics more efficiently than pure Monte Carlo ray tracing methods. The technique can also be extended to volumetric photon mapping, which supports participating media and renders volume caustics.\
 The standard photon mapping algorithm consists of two passes:
 
@@ -102,7 +102,7 @@ In my implementation of participating media, I made the simplification assumptio
 ### Coefficients and Transmittance
 * **Absorption, Scattering, and Extinction Coefficients**\
 The **absorption coefficient** $$(\sigma_a)$$ of a medium represents the probability per unit distance that a light ray traveling through the medium will be absorbed upon hitting a particle.\
-Similarly, the **scattering coefficient** $$(\sigma_s)$$ represents the probability per unit distance that a light ray traveling through the medium will hit a particle and scatter towards a different direction (out-scattering).\
+Similarly, the **scattering coefficient** $$(\sigma_s)$$ represents the probability per unit distance that a light ray traveling through the medium will hit a particle and scatter towards a different direction (**out scattering**).\
 Both of these interactions reduce the ray's radiance. Thus, the sum of $$\sigma_a$$ and $$\sigma_s$$ is known as the **extinction / attenuation coefficient**, denoted as $$\sigma_t$$.\
 Another important quantity is the ratio of the scattering coefficient to the extinction coefficent $$(\frac{\sigma_s}{\sigma_t})$$. This value is called the **single-scattering albedo**, and it will play a key role in the Russian roulette process for volumetric photon mapping, which will be introduced in the next section.
 
@@ -137,6 +137,27 @@ To address this problem, I implemented additional checks during medium stack ope
 |:--:|
 | The scene features a glass dome submerged underwater,<br>with a reflective sphere positioned half inside and half outside the glass dome. |
 
+## Volumetric Photon Mapping
+The photon mapping algorithm was extended to handle participating media by Dr. Henrik Wann Jensen and Dr. Per H. Christensen in their 1998 paper, "Efficient Simulation of Light Transport in Scenes with Participating Media using Photon Maps" [[3]](#3). While the paper did not coin the term **volumetric photon mapping**, I have adopted it from the 2008 paper, "The Beam Radiance Estimate for Volumetric Photon Mapping," by Dr. Wojciech Jarosz, Dr. Matthias Zwicker, and Dr. Henrik Wann Jensen [[5]](#5).
+
+### 1st Pass: Photon Tracing
+
+* **Photon Scattering**\
+TODO
+
+* **Photon Storing**\
+TODO\
+**volume photon map**
+
+### 2nd Pass: Rendering
+
+* **Volume Radiance Estimate**\
+TODO\
+**in scattering**
+
+* **Ray Marching**\
+TODO
+
 ## References
 <div style="font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
   <div>
@@ -151,5 +172,9 @@ To address this problem, I implemented additional checks during medium stack ope
   <div>
     <a id="4">[4]</a>
     Matt Pharr, Wenzel Jakob, and Greg Humphreys. 2023. Physically Based Rendering: From Theory to Implementation (4th ed.). MIT Press, Cambridge, MA, USA.
+  </div>
+  <div>
+    <a id="5">[5]</a>
+    Wojciech Jarosz, Matthias Zwicker, and Henrik Wann Jensen. 2008. The beam radiance estimate for volumetric photon mapping. In ACM SIGGRAPH 2008 classes (SIGGRAPH '08). Association for Computing Machinery, New York, NY, USA, Article 3, 1–112. https://doi.org/10.1145/1401132.1401137
   </div>
 </div>
