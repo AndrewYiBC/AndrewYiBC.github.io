@@ -36,10 +36,10 @@ redirect_from:
 
   <div class="gallery_item">
     <div>
-      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_3_CA_YosemiteNationalPark_ValleyView_Dusk_2400x1600.jpg?raw=true" alt="20241123_3_CA_YosemiteNationalPark_ValleyView">
+      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_3_CA_YosemiteNP_ValleyView_Dusk_2400x1600.jpg?raw=true" alt="20241123_3_CA_YosemiteNP_ValleyView">
     </div>
     <div class="gallery_photo_caption">
-      CA - Yosemite National Park, Valley View
+      CA - Yosemite NP, Valley View
       <br>
       2024/11/23
     </div>
@@ -47,10 +47,10 @@ redirect_from:
 
   <div class="gallery_item">
     <div>
-      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_2_CA_YosemiteNationalPark_ValleyView_Noon_2400x1600.jpg?raw=true" alt="20241123_2_CA_YosemiteNationalPark_ValleyView">
+      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_2_CA_YosemiteNP_ValleyView_Noon_2400x1600.jpg?raw=true" alt="20241123_2_CA_YosemiteNP_ValleyView">
     </div>
     <div class="gallery_photo_caption">
-      CA - Yosemite National Park, Valley View
+      CA - Yosemite NP, Valley View
       <br>
       2024/11/23
     </div>
@@ -58,10 +58,10 @@ redirect_from:
 
   <div class="gallery_item">
     <div>
-      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_1_CA_YosemiteNationalPark_TunnelView_2400x1600.jpg?raw=true" alt="20241123_1_CA_YosemiteNationalPark_TunnelView">
+      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_1_CA_YosemiteNP_TunnelView_2400x1600.jpg?raw=true" alt="20241123_1_CA_YosemiteNP_TunnelView">
     </div>
     <div class="gallery_photo_caption">
-      CA - Yosemite National Park, Tunnel View
+      CA - Yosemite NP, Tunnel View
       <br>
       2024/11/23
     </div>
