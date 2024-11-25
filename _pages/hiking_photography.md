@@ -36,6 +36,39 @@ redirect_from:
 
   <div class="gallery_item">
     <div>
+      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_3_CA_YosemiteNationalPark_ValleyView_Dusk_2400x1600.jpg?raw=true" alt="20241123_3_CA_YosemiteNationalPark_ValleyView">
+    </div>
+    <div class="gallery_photo_caption">
+      CA - Yosemite National Park, Valley View
+      <br>
+      2024/11/23
+    </div>
+  </div>
+
+  <div class="gallery_item">
+    <div>
+      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_2_CA_YosemiteNationalPark_ValleyView_Noon_2400x1600.jpg?raw=true" alt="20241123_2_CA_YosemiteNationalPark_ValleyView">
+    </div>
+    <div class="gallery_photo_caption">
+      CA - Yosemite National Park, Valley View
+      <br>
+      2024/11/23
+    </div>
+  </div>
+
+  <div class="gallery_item">
+    <div>
+      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20241123_1_CA_YosemiteNationalPark_TunnelView_2400x1600.jpg?raw=true" alt="20241123_1_CA_YosemiteNationalPark_TunnelView">
+    </div>
+    <div class="gallery_photo_caption">
+      CA - Yosemite National Park, Tunnel View
+      <br>
+      2024/11/23
+    </div>
+  </div>
+
+  <div class="gallery_item">
+    <div>
       <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20240803_2_CO_RockyMountainNP_ForestCanyonOverlook_0_2400x1600.jpg?raw=true" alt="20240803_2_CO_RockyMountainNP_ForestCanyonOverlook_0">
     </div>
     <div class="gallery_photo_caption">
@@ -103,17 +136,6 @@ redirect_from:
   <div class="gallery_item">
     <div>
       <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20240114_1_CA_DeathValleyNP_ZabriskiePoint_0_2400x1600.jpg?raw=true" alt="20240114_1_CA_DeathValleyNP_ZabriskiePoint_0">
-    </div>
-    <div class="gallery_photo_caption">
-      CA - Death Valley NP, Zabriskie Point
-      <br>
-      2024/01/14
-    </div>
-  </div>
-
-  <div class="gallery_item">
-    <div>
-      <img class="gallery_photo" src="https://github.com/AndrewYiBC/website-photo-gallery/blob/main/photos/20240114_1_CA_DeathValleyNP_ZabriskiePoint_1_2400x1600.jpg?raw=true" alt="20240114_1_CA_DeathValleyNP_ZabriskiePoint_1">
     </div>
     <div class="gallery_photo_caption">
       CA - Death Valley NP, Zabriskie Point
@@ -349,6 +371,7 @@ redirect_from:
 
 </div>
 
+<!--
 ## Earlier
 <div class="gallery_list">
 
@@ -367,3 +390,4 @@ redirect_from:
   </div>
 
 </div>
+-->
