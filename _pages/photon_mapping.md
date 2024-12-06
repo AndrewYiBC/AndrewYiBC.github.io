@@ -256,7 +256,7 @@ For the final render of my box-with-water demo scene, I used $$k=12$$ and $$3$$ 
 <!-- * **Special Material for the Front Face of Water** -->
 
 ## References
-<div style="font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
+<div style="text-align: left; font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
   <div>
     <a id="1">[1]</a> Henrik Wann Jensen. 2001. Realistic image synthesis using photon mapping. A. K. Peters, Ltd., USA.
   </div>

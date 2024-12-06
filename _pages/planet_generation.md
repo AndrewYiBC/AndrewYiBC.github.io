@@ -87,7 +87,7 @@ In each interval between two band heights, colors are calculated by interpolatio
 Users can optionally add a ring (like Saturn's) to the generated gas giant. The ring is modeled as a flattened torus with inner and outer radii randomized within a certain range. It uses the same color preset as the planet, with color bands on the ring determined by each vertex's radial distance from the planet's center.
 
 ## References
-<div style="font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
+<div style="text-align: left; font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
   <div>
     <a id="1">[1]</a> Ken Perlin. 1985. An image synthesizer. In Proceedings of the 12th annual conference on Computer graphics and interactive techniques (SIGGRAPH '85). Association for Computing Machinery, New York, NY, USA, 287–296. https://doi.org/10.1145/325334.325247
   </div>
