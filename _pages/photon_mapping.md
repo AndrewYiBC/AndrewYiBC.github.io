@@ -8,6 +8,10 @@ redirect_from:
   - /photon_mapping.html
 ---
 
+<style>
+  body {text-align: justify;}
+</style>
+
 In computer graphics, **caustics** refer to patterns of light formed when light rays focus onto specifc areas of a surface, often through specular reflections or refractions. When such light rays transmit through a participating medium, they can be scattered and result in **volume caustics**. In real life, caustics can commonly be observed under a wavy water surface or in the shadow of a curved glass of liquid. An example of volume caustics could be the sun casting beams of light through a misty morning forest -- an effect I witnessed during a visit to Sequoia National Park in November 2023, which also served as the inspiration for this project.
 
 Drawn to the astonishing visual effects of caustics and volume caustics, I decided to implement **photon mapping** and **volumetric photon mapping**, and I was fortunate to have Professor [Theodore Kim](https://seas.yale.edu/faculty-research/faculty-directory/theodore-kim) supervise my project. This work builds upon the distributed ray tracer which I implemented from scratch in C++ for Professor Kim's Computer Graphics course project.
@@ -147,7 +151,7 @@ In my implementation, for a photon traveling through a participating medium, the
 
 * **Photon Scattering**\
 If an interaction event occurs, the type of interaction is again determined using Russian roulette. Recall that the scattering albedo of the medium represents the ratio of the scattering coefficient to the extinction coefficent: $$\Lambda = \frac{\sigma_s}{\sigma_t}$$. Accordingly, the probabilities used in the Russian roulette process should be $$\Lambda$$ for scattering and $$(1-\Lambda)$$ for absorption.\
-In the case of a scattering event, the photon's new direction is sampled from the phase function. The phase function that I implemented is the **Henyey-Greenstein Phase Function** approximated by the **Schlick Phase Function**:
+In the case of a scattering event, the photon's new direction is sampled from the phase function. The phase function that I implemented is the **Henyey-Greenstein Phase Function** approximated by the **Schlick Phase Function**:\
 ------------------------------------------------------------------------------------------------------------\
 The Henyey-Greenstein Phase Function:
 \$$
@@ -160,7 +164,7 @@ Importance Sampling:
 These are Equations (10.12) and (10.14) of [[1]](#1), where\
 $$\theta$$ is the angle between $$\omega_i$$ and $$\omega_o$$\
 $$g\in[-1,1]$$ is the asymmetry parameter: $$g > 0$$ results in **forward scattering**, $$g < 0$$ results in **backward scattering**, $$g = 0$$ results in **isotropic scattering** where the outgoing direction is uniformly distributed and independent of the incident direction\
-$$\xi$$ is a uniform random variable in $$[0, 1]$$
+$$\xi$$ is a uniform random variable in $$[0, 1]$$\
 ------------------------------------------------------------------------------------------------------------
 <br><br>
 Since the Henyey-Greenstein Phase Function is roughly ellipsoidal in shape, the Schlick Phase Function could be used as a approximation that is more efficient to evaluate:\
@@ -176,7 +180,7 @@ Importance Sampling:
 These are Equations (10.15) and (10.16) of [[1]](#1), where\
 $$\theta$$ is the angle between $$\omega_i$$ and $$\omega_o$$\
 $$k\in[-1,1]$$ is the asymmetry parameter, similar to $$g$$ in the Henyey-Greenstein Phase Function\
-$$\xi$$ is a uniform random variable in $$[0, 1]$$
+$$\xi$$ is a uniform random variable in $$[0, 1]$$\
 ------------------------------------------------------------------------------------------------------------
 
 * **Photon Storing**\
@@ -188,7 +192,7 @@ For participating media, the indirect illumination component is the gain of radi
 
 * **Ray Marching**\
 Before explaining the volume radiance estimate for in-scattered radiance, I will first introduce the technique of **ray marching**, a numerical integration method for computing the **volume rendering equation**. This approach divides a ray travelling through a participating medium into small segments and iterativly evaluates the radiance after each segment. The calculation accounts for direct in-scattered illumination from light sources, indirect in-scattered illumination, and attenuation of the radiance from the previous segment.\
-Below is a high-level formulation of the ray marching algorithm:
+Below is a high-level formulation of the ray marching algorithm:\
 ------------------------------------------------------------------------------------------------------------\
 $$L_{n+1}(x,\vec{\omega})=\sum_l^N ($$ *direct in-scattered illumination from each light source* $$)$$\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$$+ ($$ *indirect in-scattered illumination* $$)$$\
