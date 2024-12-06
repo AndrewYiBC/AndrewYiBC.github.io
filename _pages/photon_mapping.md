@@ -2,6 +2,8 @@
 permalink: /photon_mapping/
 title: "Volumetric Photon Mapping Project"
 author_profile: true
+toc: true
+toc_sticky: true
 redirect_from: 
   - /photon/
   - /photon_mapping/
@@ -9,7 +11,7 @@ redirect_from:
 ---
 
 <style>
-  body {text-align: justify;}
+  p {text-align: justify;}
 </style>
 
 In computer graphics, **caustics** refer to patterns of light formed when light rays focus onto specifc areas of a surface, often through specular reflections or refractions. When such light rays transmit through a participating medium, they can be scattered and result in **volume caustics**. In real life, caustics can commonly be observed under a wavy water surface or in the shadow of a curved glass of liquid. An example of volume caustics could be the sun casting beams of light through a misty morning forest -- an effect I witnessed during a visit to Sequoia National Park in November 2023, which also served as the inspiration for this project.

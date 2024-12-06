@@ -2,6 +2,8 @@
 permalink: /planet_generation/
 title: "Procedural Planet Generation Project"
 author_profile: true
+toc: true
+toc_sticky: true
 redirect_from: 
   - /planet/
   - /planet_generation/
@@ -9,7 +11,7 @@ redirect_from:
 ---
 
 <style>
-  body {text-align: justify;}
+  p {text-align: justify;}
 </style>
 
 In Spring 2024, I enrolled in Professor [Julie Dorsey](https://seas.yale.edu/faculty-research/faculty-directory/julie-dorsey)'s seminar on procedural techniques in computer graphics. Among the topics we explored, I was particularly intrigued by fractal noise, solid texturing, and their applications in generating realistic terrains. Therefore, for part of the course project, I developed procedural algorithms for modeling and texturing celestial bodies -- such as rocky planets and gas giants -- using the Blender Python API. Following the demo gallery, I will provide an overview of my procedural planet generation algorithm.
