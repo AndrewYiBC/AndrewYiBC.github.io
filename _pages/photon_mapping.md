@@ -257,6 +257,9 @@ For the final render of my box-with-water demo scene, I used $$k=12$$ and $$3$$ 
 
 <!-- * **Special Material for the Front Face of Water** -->
 
+## Acknowledgement
+I would like to express my sincere gratitude to Professor [Theodore Kim](https://seas.yale.edu/faculty-research/faculty-directory/theodore-kim) for his invaluable time, guidance, and support throughout this project, especially during an extremely busy semester.
+
 ## References
 <div style="text-align: left; font-size: 16px; padding-left: 56px; text-indent: -56px; display: inline-block;">
   <div>
