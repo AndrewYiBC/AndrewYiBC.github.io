@@ -44,12 +44,12 @@ It is worth noting that, by including position and direction information, each p
 * **Photon Emission**\
 Photon tracing is a **forward ray tracing** process, as opposed to **backward ray tracing**, which starts at the camera. In photon tracing, each photon is emitted from a light source, and its starting position and direction can be sampled based on the characteristics of the light source. For example, the starting position could be uniformly distributed across an area light source, and the starting direction could be sampled within a hemisphere or a cone. Once generated, the photon is treated as a ray and traced through the scene.\
 In my box-with-water demo scene, I implemented several sampling strategies. However, in the final demo, the main light source on the ceiling is modeled as a cosine-weighted hemispherical point light source to produce sharper caustics.\
-One additional detail is that if a light source emits \\(N\\) photons, then each photon should carry \\(\frac{1}{N}\\) of the light source's power.
+One additional detail is that if a light source emits $$N$$ photons, then each photon should carry $$\frac{1}{N}$$ of the light source's power.
 
 * **Photon Scattering**\
 When a photon hits the scene geometry (i.e. a ray intersection), it interacts with the surface and can either be reflected (diffusely or specularly), transmitted, or absorbed. The action of the photon is determined using a technique called **Russian roulette**, which eliminates the need to generate additional photons during the tracing process.\
 For example, when a photon hits a refractive surface, instead of splitting its power into a transmitting photon and a reflecting photon based on the Fresnel equations, the Russian roulette algorithm will let the photon either transmit or reflect entirely, retaining its original power.\
-The Russian roulette algorithm determines the photon's action using a probability distribution derived from the interacting surface's material parameters. For instance, when a photon interacts with a surface, the surface's diffuse coefficient \\(d\\) and specular coefficient \\(s\\) could be used to assign probabilities: the photon can have a probability of \\(d\\) to be diffusely reflected, \\(s\\) to be specularly reflected, and \\((1 - d - s)\\) to be absorbed. Similarly, when a photon hits a refractive surface, the coefficients computed from the Fresnel equations (which use the refractive index of the surface material) can be used as probabilities for specular reflection and transmission, respectively.\
+The Russian roulette algorithm determines the photon's action using a probability distribution derived from the interacting surface's material parameters. For instance, when a photon interacts with a surface, the surface's diffuse coefficient $$d$$ and specular coefficient $$s$$ could be used to assign probabilities: the photon can have a probability of $$d$$ to be diffusely reflected, $$s$$ to be specularly reflected, and $$(1 - d - s)$$ to be absorbed. Similarly, when a photon hits a refractive surface, the coefficients computed from the Fresnel equations (which use the refractive index of the surface material) can be used as probabilities for specular reflection and transmission, respectively.\
 After the photon action is determined, the photon's properties, such as position and direction, are updated following ray tracing practices.
 
 * **Photon Storing**\
@@ -201,10 +201,10 @@ $$L_{n+1}(x,\vec{\omega})=\sum_l^N ($$ *direct in-scattered illumination from ea
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$$+ e^{-\sigma_t(x)\Delta x} L_n(x + \vec\omega\Delta x, \vec\omega)$$\
 \
 This is a high-level summary of Equation (10.19) of [[1]](#1), where\
+$$N$$ is the number of light sources\
 $$\Delta x$$ is the step size\
 $$L_{n+1}$$ is the radiance after the current step\
 $$L_n$$ is the radiance before the current step\
-$$N$$ is the number of light sources\
 The attenuation $$e^{-\sigma_t(x)\Delta x}$$ is calculated from Beer's Law.\
 The details of evaluating each term using the volume radiance estimate will be explained shortly.\
 ------------------------------------------------------------------------------------------------------------
@@ -243,14 +243,14 @@ This is modified from Equation (10.30) of [[1]](#1), where the first two terms a
 ## Additional Details
 At this point, I have introduced all the core concepts and algorithms for implementing volumetric photon mapping. Below, I outline several additional technical details specific to my implementation:
 
-* **Saving and Loading Photons**\
+### Saving and Loading Photons
 To avoid repeated computation when rendering the same scene (geometry and lighting) with different parameters (e.g., resolution), I implemented the option to save photons stored during the photon tracing pass to a file. This allows subsequent renders of the same scene to skip the photon tracing step by loading the saved photon data, significantly reducing computation time.
 
-* **Perlin Noise Displaced Water Surface**\
+### Perlin Noise Displaced Water Surface
 The water surface of my box-with-water demo scene is generated by displacing the vertices of a fine rectangular grid using Perlin noise, a renowned procedural noise function introduced by Dr. Ken Perlin in 1985 [[6]](#6).\
 I implemented a Perlin noise generator with an adjustable octave parameter, allowing for customizable levels of detail. Additionally, I incorporated the improved interpolation method introduced in Dr. Ken Perlin's 2002 paper, "Improving noise" [[7]](#7). Instead of the "smoothstep" cubic interpolation function, $$s(t)=3t^2-2t^3$$, I utilized the fifth-order "smootherstep" function, $$s(t)=6t^5-15t^4+10t^3$$. This enhancement eliminates the visible grid patterns on the water surface and in the resulting underwater caustics.
 
-* **AABB Hierarchy Optimized for Rectangular Grid of Primitives**\
+### AABB Hierarchy Optimized for Rectangular Grid of Primitives
 In my box-with-water demo scene, most geometric primitives are concentrated on the water surface. To accelerate ray tracing and photon tracing, I developed an axis-aligned bounding box (AABB) hierarchy tailored to the rectangular grid of triangles forming the water surface.\
 The first level of the bounding volume hierarchy partitions the water surface uniformly into a $$k*k$$ grid, with an AABB constructed for each cell. At each subsequent level of the hierarchy, each cell is further divided into $$k*k$$ subcells with corresponding AABBs, until the max level is reached. At the lowest level of the hierarchy, two triangle primitives are constructed for each rectangular subcell.\
 For the final render of my box-with-water demo scene, I used $$k=12$$ and $$3$$ levels for the hierarchy. This configuration balances memory usage with intersection test efficiency, resulting in $$2*(12^3)^2\approx 6$$ million triangles for the water surface.
