@@ -14,7 +14,7 @@ redirect_from:
   p {text-align: justify;}
 </style>
 
-In computer graphics, **caustics** refer to patterns of light formed when light rays focus onto specifc areas of a surface, often through specular reflections or refractions. When such light rays transmit through a participating medium, they can be scattered and result in **volume caustics**. In real life, caustics can commonly be observed under a wavy water surface or in the shadow of a curved glass of liquid. An example of volume caustics could be the sun casting beams of light through a misty morning forest -- an effect I witnessed during a visit to Sequoia National Park in November 2023, which also served as the inspiration for this project.
+In computer graphics, **caustics** refer to patterns of light formed when light rays focus onto specific areas of a surface, often through specular reflections or refractions. When such light rays transmit through a participating medium, they can be scattered and result in **volume caustics**. In real life, caustics can commonly be observed under a wavy water surface or in the shadow of a curved glass of liquid. An example of volume caustics could be the sun casting beams of light through a misty morning forest -- an effect I witnessed during a visit to Sequoia National Park, which also served as the inspiration for this project.
 
 Drawn to the astonishing visual effects of caustics and volume caustics, I decided to implement **photon mapping** and **volumetric photon mapping**, and I was fortunate to have Professor [Theodore Kim](https://seas.yale.edu/faculty-research/faculty-directory/theodore-kim) supervise my project. This work builds upon the distributed ray tracer which I implemented from scratch in C++ for Professor Kim's Computer Graphics course project.
 
@@ -44,7 +44,7 @@ It is worth noting that, by including position and direction information, each p
 * **Photon Emission**\
 Photon tracing is a **forward ray tracing** process, as opposed to **backward ray tracing**, which starts at the camera. In photon tracing, each photon is emitted from a light source, and its starting position and direction can be sampled based on the characteristics of the light source. For example, the starting position could be uniformly distributed across an area light source, and the starting direction could be sampled within a hemisphere or a cone. Once generated, the photon is treated as a ray and traced through the scene.\
 In my box-with-water demo scene, I implemented several sampling strategies. However, in the final demo, the main light source on the ceiling is modeled as a cosine-weighted hemispherical point light source to produce sharper caustics.\
-One additional detail is that if a light source emits \\(N\\) photons, then each photon should carry \\(1/N\\) of the light source's power.
+One additional detail is that if a light source emits \\(N\\) photons, then each photon should carry \\(\frac{1}{N}\\) of the light source's power.
 
 * **Photon Scattering**\
 When a photon hits the scene geometry (i.e. a ray intersection), it interacts with the surface and can either be reflected (diffusely or specularly), transmitted, or absorbed. The action of the photon is determined using a technique called **Russian roulette**, which eliminates the need to generate additional photons during the tracing process.\
@@ -95,7 +95,7 @@ This is Equation (7.9) of [[1]](#1) and Equation (5) of [[2]](#2)\
 
 ## Participating Media
 Before delving into volumetric photon mapping, I will provide a brief overview of the concept of **participating media** in computer graphics. This summary is based on what I learned from Chapter 11 of *Physically Based Rendering: From Theory to Implementation* (PBRT) (4th Edition) [[4]](#4).\
-Paticipating media refer to regions filled with small particles that interact with light as it travels through the medium. Fog and cloudy water are common real-world examples of paticipating media. Due to the massive number of particles present in such media, it is infeasible to model each particle individually. Instead, when rendering a scene with participating media, the media's effects on light are modeled probablistically.
+Participating media refer to regions filled with small particles that interact with light as it travels through the medium. Fog and cloudy water are common real-world examples of participating media. Due to the massive number of particles present in such media, it is infeasible to model each particle individually. Instead, when rendering a scene with participating media, the media's effects on light are modeled probabilistically.
 
 ### Physical Processes in Participating Media
 These are three major physical processes that influence light transport in participating media. I will quote their definitions from PBRT [[4]](#4):
@@ -103,17 +103,17 @@ These are three major physical processes that influence light transport in parti
 * **Emission**: radiance that is added to the environment from luminous particles.
 * **Scattering**: radiance heading in one direction that is scattered to other directions due to collisions with particles.
 
-In my implementation of participating media, I made the simplification assumptions that all media are non-emissive and **homogeneous** -- meaning the properties of a medium are constant throughout its region.
+In my implementation of participating media, I made the simplifying assumptions that all media are non-emissive and **homogeneous** -- meaning the properties of a medium are constant throughout its region.
 
 ### Coefficients and Transmittance
 * **Absorption, Scattering, and Extinction Coefficients**\
 The **absorption coefficient** $$(\sigma_a)$$ of a medium represents the probability per unit distance that a light ray traveling through the medium will be absorbed upon hitting a particle.\
 Similarly, the **scattering coefficient** $$(\sigma_s)$$ represents the probability per unit distance that a light ray traveling through the medium will hit a particle and scatter towards a different direction (**out scattering**).\
 Both of these interactions reduce the ray's radiance. Thus, the sum of $$\sigma_a$$ and $$\sigma_s$$ is known as the **extinction / attenuation coefficient**, denoted as $$\sigma_t$$.\
-Another important quantity is the ratio of the scattering coefficient to the extinction coefficent $$(\frac{\sigma_s}{\sigma_t})$$. This value is called the **scattering albedo**, and it will play a key role in the Russian roulette process for volumetric photon mapping, which will be introduced in the next section.
+Another important quantity is the ratio of the scattering coefficient to the extinction coefficient $$(\frac{\sigma_s}{\sigma_t})$$. This value is called the **scattering albedo**, and it will play a key role in the Russian roulette process for volumetric photon mapping, which will be introduced in the next section.
 
 * **Transmittance and Beer's Law**\
-For any single light ray, the events of scattering or absorbtion intuitively either occur or not. However, in participating media, these interactions are modeled as continuous reduction in radiance, which statistically achieves the same overall effect.\
+For any single light ray, the events of scattering or absorption intuitively either occur or not. However, in participating media, these interactions are modeled as continuous reduction in radiance, which statistically achieves the same overall effect.\
 The fraction of radiance that remains as a light ray travels from point $$p$$ to $$p'$$ is represented by the **transmittance** $$T_r(p \rightarrow p')$$.\
 Under the homogeneous medium assumption, the transmittance from $$p$$ to $$p'$$ can be easily computed following **Beer's Law**:\
 ------------------------------------------------------------------------------------------------------------
@@ -149,10 +149,10 @@ The photon mapping algorithm was extended to handle participating media by Dr. H
 ### 1st Pass: Photon Tracing
 In a scene with participating media, photon tracing must account for the effects of the physical processes on photons. Specifically, as a photon travels through a participating medium, it may be scattered or absorbed. I refer to such an occurrence as an "interaction event".\
 The average distance for such an interaction to occur depends on the extinction coefficient of the medium: $$d = \frac{1}{\sigma_t}$$ (Eq 10.21 of [[1]](#1)). Applying importance sampling, the interaction distance can be sampled as $$d = \frac{-log(\xi)}{\sigma_t}$$, where $$\xi$$ is a uniform random variable in $$[0, 1]$$ (Eq 10.22 of [[1]](#1)).\
-In my implementation, for a photon traveling through a participating medium, the distance to the boundary of the current medium ($$d_{total}$$) is computed via ray intersection. The interaction distance $$d$$ is then sampled. If $$d<d_{total}$$, an interaction event occurs within the partcipating medium is handled accordingly. Otherwise, the photon exits the medium as usual. Since this process models a single photon, no power scaling is required.
+In my implementation, for a photon traveling through a participating medium, the distance to the boundary of the current medium ($$d_{total}$$) is computed via ray intersection. The interaction distance $$d$$ is then sampled. If $$d<d_{total}$$, an interaction event occurs within the participating medium is handled accordingly. Otherwise, the photon exits the medium as usual. Since this process models a single photon, no power scaling is required.
 
 * **Photon Scattering**\
-If an interaction event occurs, the type of interaction is again determined using Russian roulette. Recall that the scattering albedo of the medium represents the ratio of the scattering coefficient to the extinction coefficent: $$\Lambda = \frac{\sigma_s}{\sigma_t}$$. Accordingly, the probabilities used in the Russian roulette process should be $$\Lambda$$ for scattering and $$(1-\Lambda)$$ for absorption.\
+If an interaction event occurs, the type of interaction is again determined using Russian roulette. Recall that the scattering albedo of the medium represents the ratio of the scattering coefficient to the extinction coefficient: $$\Lambda = \frac{\sigma_s}{\sigma_t}$$. Accordingly, the probabilities used in the Russian roulette process should be $$\Lambda$$ for scattering and $$(1-\Lambda)$$ for absorption.\
 In the case of a scattering event, the photon's new direction is sampled from the phase function. The phase function that I implemented is the **Henyey-Greenstein Phase Function** approximated by the **Schlick Phase Function**:\
 ------------------------------------------------------------------------------------------------------------\
 The Henyey-Greenstein Phase Function:
@@ -193,7 +193,7 @@ It is also a common practice to omit storing the first scattering of photons, as
 For participating media, the indirect illumination component is the gain of radiance due to **in scattering** -- light scattered into the ray's direction from other directions. This component is essential for producing effects such as volume caustics. Since I decided to store the first scattering of the photons, the radiance estimates will account for the in-scattered radiance from both direct **single scattering** and indirect **multiple scattering**.
 
 * **Ray Marching**\
-Before explaining the volume radiance estimate for in-scattered radiance, I will first introduce the technique of **ray marching**, a numerical integration method for computing the **volume rendering equation**. This approach divides a ray travelling through a participating medium into small segments and iterativly evaluates the radiance after each segment. The calculation accounts for direct in-scattered illumination from light sources, indirect in-scattered illumination, and attenuation of the radiance from the previous segment.\
+Before explaining the volume radiance estimate for in-scattered radiance, I will first introduce the technique of **ray marching**, a numerical integration method for computing the **volume rendering equation**. This approach divides a ray traveling through a participating medium into small segments and iteratively evaluates the radiance after each segment. The calculation accounts for direct in-scattered illumination from light sources, indirect in-scattered illumination, and attenuation of the radiance from the previous segment.\
 Below is a high-level formulation of the ray marching algorithm:\
 ------------------------------------------------------------------------------------------------------------\
 $$L_{n+1}(x,\vec{\omega})=\sum_l^N ($$ *direct in-scattered illumination from each light source* $$)$$\
@@ -247,8 +247,8 @@ At this point, I have introduced all the core concepts and algorithms for implem
 To avoid repeated computation when rendering the same scene (geometry and lighting) with different parameters (e.g., resolution), I implemented the option to save photons stored during the photon tracing pass to a file. This allows subsequent renders of the same scene to skip the photon tracing step by loading the saved photon data, significantly reducing computation time.
 
 * **Perlin Noise Displaced Water Surface**\
-The water surface of my box-with-water demo scene is generated by displacing the vertices of a fine rectangular grid using Perlin noise.\
-I implemented a Perlin noise generator with an adjustable octave parameter, allowing for customizable levels of detail. Additionally, I incorporated the improved interpolation method introduced in Dr. Ken Perlin's 2002 paper, "Improving noise" [[6]](#6). Instead of the "smoothstep" cubic interpolation function, $$s(t)=3t^2-2t^3$$, I utilized the fifth-order "smootherstep" function, $$s(t)=6t^5-15t^4+10t^3$$. This enhancement eliminates the visible grid patterns on the water surface and in the resulting underwater caustics.
+The water surface of my box-with-water demo scene is generated by displacing the vertices of a fine rectangular grid using Perlin noise, a renowned procedural noise function introduced by Dr. Ken Perlin in 1985 [[6]](#6).\
+I implemented a Perlin noise generator with an adjustable octave parameter, allowing for customizable levels of detail. Additionally, I incorporated the improved interpolation method introduced in Dr. Ken Perlin's 2002 paper, "Improving noise" [[7]](#7). Instead of the "smoothstep" cubic interpolation function, $$s(t)=3t^2-2t^3$$, I utilized the fifth-order "smootherstep" function, $$s(t)=6t^5-15t^4+10t^3$$. This enhancement eliminates the visible grid patterns on the water surface and in the resulting underwater caustics.
 
 * **AABB Hierarchy Optimized for Rectangular Grid of Primitives**\
 In my box-with-water demo scene, most geometric primitives are concentrated on the water surface. To accelerate ray tracing and photon tracing, I developed an axis-aligned bounding box (AABB) hierarchy tailored to the rectangular grid of triangles forming the water surface.\
@@ -278,6 +278,10 @@ For the final render of my box-with-water demo scene, I used $$k=12$$ and $$3$$ 
   </div>
   <div>
     <a id="6">[6]</a>
+    Ken Perlin. 1985. An image synthesizer. SIGGRAPH Comput. Graph. 19, 3 (Jul. 1985), 287–296. https://doi.org/10.1145/325165.325247
+  </div>
+  <div>
+    <a id="7">[7]</a>
     Ken Perlin. 2002. Improving noise. ACM Trans. Graph. 21, 3 (July 2002), 681–682. https://doi.org/10.1145/566654.566636
   </div>
 </div>
